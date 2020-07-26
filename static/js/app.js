@@ -2,7 +2,7 @@
 const tableData = data;
 
 // Reference the HTML table using d3
-var tbbody = d3.select("tbody");
+var tbody = d3.select("tbody");
 
 function buildTable(data) {
   // First, clear out any existing data
