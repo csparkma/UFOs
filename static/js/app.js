@@ -23,27 +23,47 @@ function buildTable(data) {
   });
 }
 
-function handleClick() {
-  // Grab the datetime value from the filter
-  let date = d3.select("#datetime").property("value");
-  let filteredData = tableData;
+// Update filters based on filter-btn event listener
+function updateFilters() {
+    let filters = {
+      datetime:null
+      , city:null
+      , state:null
+      , country:null
+      , shape:null
+    };
 
-   // Check to see if a date was entered and filter the
-  // data using that date.
-  if (date) {
-    // Apply `filter` to the table data to only keep the
-    // rows where the `datetime` value matches the filter value
-    filteredData = filteredData.filter(row => row.datetime === date);
-  }
+    Object.keys(filters).forEach((key) => {
+      filterValue = d3.select('#'.concat(key)).property("value");
+      // If a filter value is entered then add to filters object
+      if(filterValue) {
+        filters[key] = filterValue.toLowerCase();
+      }
+      else {
+        delete filters[key];
+      }
+    });
 
-   // Rebuild the table using the filtered data
-  // @NOTE: If no date was entered, then filteredData will
-  // just be the original tableData.
-  buildTable(filteredData);
+    // Call function to apply all filters and rebuild the table
+    filterTable(filters);
 }
 
-// Attach an event to listen for the form button
-d3.selectAll("#filter-btn").on("click", handleClick);
+function filterTable(filters) {
+    // Set the filteredData to the tableData
+    let filteredData = tableData;
+
+    // Loop through all of the filters and keep any data that matches the filter values
+    Object.keys(filters).forEach((key) => {
+      if(filters[key]) {
+        filteredData = filteredData.filter(row => row[key] === filters[key]);
+      }
+    });
+    // Finally, rebuild the table using the filtered Data
+    buildTable(filteredData);
+  }
+
+d3.selectAll("input").on("change", updateFilters);
+d3.selectAll("#filter-btn").on("click", updateFilters);
 
 // Build the table when the page loads
 buildTable(tableData);
